@@ -1,0 +1,33 @@
+name: Temporary Meshy build smoke test
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  smoke:
+    if: github.head_ref == 'agent/temporary-meshy-build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Confirm runner and outbound Meshy endpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version
+          curl --fail --silent --show-error --max-time 20 \
+            -o /dev/null -w 'meshy_http=%{http_code}\n' \
+            https://api.meshy.ai/openapi/v1/balance || true
+          gh issue comment "${{ github.event.pull_request.number }}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --body "MESHY_RUNNER_SMOKE_OK
+          run_id=${GITHUB_RUN_ID}
+          runner=${RUNNER_OS}"
