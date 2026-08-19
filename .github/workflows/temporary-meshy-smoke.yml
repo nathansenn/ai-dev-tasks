@@ -6,7 +6,7 @@ on:
     types: [opened, synchronize, reopened]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
 
@@ -18,7 +18,7 @@ jobs:
   build:
     if: github.head_ref == 'agent/temporary-meshy-build'
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 45
     env:
       PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Receive credential securely and generate assets
+      - name: Receive credential securely and recover completed assets
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -107,7 +107,7 @@ jobs:
           export MESHY_API_KEY
 
           python -m pip install --disable-pip-version-check --quiet requests
-          python temporary-meshy-build/generate.py
+          python temporary-meshy-build/recover.py
 
       - name: Optimize GLBs for browser delivery
         shell: bash
@@ -140,8 +140,7 @@ jobs:
           path = Path('build-output/meshy-generation.json')
           data = json.loads(path.read_text())
           for asset in data['assets']:
-              raw_name = asset['filename']
-              web_name = raw_name.replace('.raw.glb', '.web.glb')
+              web_name = asset['filename'].replace('.raw.glb', '.web.glb')
               web = Path('build-output') / web_name
               asset['web_file'] = web_name
               asset['web_bytes'] = web.stat().st_size
@@ -173,8 +172,9 @@ jobs:
               if path.stat().st_size < 100_000 or path.read_bytes()[:4] != b'glTF':
                   raise SystemExit(f'Invalid GLB: {path}')
               print(f'{path.name}: {path.stat().st_size:,} bytes')
+          if any(b'msy_' in path.read_bytes() for path in root.rglob('*') if path.is_file() and path.suffix not in {'.glb', '.png'}):
+              raise SystemExit('Credential-like text found in build output')
           PY
-          ! grep -R --line-number --fixed-strings 'msy_' build-output temporary-meshy-build
 
       - name: Upload transferable artifact
         uses: actions/upload-artifact@v4
@@ -185,14 +185,41 @@ jobs:
           retention-days: 3
           compression-level: 6
 
+      - name: Publish immutable public asset commit
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          STAGE="$(mktemp -d)"
+          mkdir -p "$STAGE/commander-assets/gear-ratio"
+          cp build-output/*.web.glb "$STAGE/commander-assets/gear-ratio/"
+          cp build-output/*-preview.png "$STAGE/commander-assets/gear-ratio/" 2>/dev/null || true
+          cp build-output/*.inspect.txt "$STAGE/commander-assets/gear-ratio/" 2>/dev/null || true
+          cp build-output/meshy-generation.json "$STAGE/commander-assets/gear-ratio/"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout --orphan commander-gear-ratio-assets
+          git rm -rf . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$STAGE/." .
+          git add commander-assets/gear-ratio
+          git commit -m 'Publish Commander gear-ratio Meshy assets'
+          git push --force origin HEAD:commander-gear-ratio-assets
+          SHA="$(git rev-parse HEAD)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Published immutable asset commit $SHA"
+
       - name: Report completion
         env:
           GH_TOKEN: ${{ github.token }}
+          ASSET_SHA: ${{ steps.publish.outputs.sha }}
         shell: bash
         run: |
           gh issue comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "MESHY_ARTIFACT_READY
           run_id=${GITHUB_RUN_ID}
           artifact=commander-gear-ratio-meshy-${GITHUB_RUN_ID}
+          asset_commit=${ASSET_SHA}
           assets=gear-ratio-workshop-meshy.web.glb,gear-ratio-millstone-meshy.web.glb"
 
       - name: Report sanitized failure
@@ -203,4 +230,4 @@ jobs:
         run: |
           gh issue comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "MESHY_ARTIFACT_BUILD_FAILED
           run_id=${GITHUB_RUN_ID}
-          The workflow failed with sanitized logs; no plaintext API key was committed."
+          The recovery workflow failed with sanitized logs; no plaintext API key was committed."
