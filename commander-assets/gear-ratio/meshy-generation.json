@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "generator": "Meshy Text-to-3D API v2",
+  "ai_model": "latest (Meshy 7)",
+  "generated_at": "2026-08-19T23:31:37Z",
+  "recovered_at": "2026-08-19T23:39:32.756727+00:00",
+  "lesson": "gear-ratio",
+  "credits_consumed_original_build": 70,
+  "balance_at_recovery": 3907,
+  "assets": [
+    {
+      "slug": "windmill-workshop",
+      "filename": "gear-ratio-workshop-meshy.raw.glb",
+      "target_polycount": 60000,
+      "prompt": "One connected open-front medieval windmill gristmill workshop environment for an AAA educational game. Weathered timber post-and-beam frame on a rough stone plinth, steep wood-shingle roof, four wooden lattice sails high on the rear gable, side platforms, grain sacks and flour bins at the perimeter. Keep a large empty unobstructed machinery bay at front center for animated gears. Realistic proportions and a clean silhouette. No people, text, logos, visible gears, millstone, floating pieces, or separate ground diorama.",
+      "texture_prompt": "Historically grounded warm weathered oak, hand-laid gray limestone, dark forged iron brackets, muted canvas sacks, dusty flour residue and restrained edge wear. Realistic physically based materials with clean albedo for custom cinematic lighting. No painted text, baked dramatic shadows, fantasy glow, or bright saturated colors.",
+      "preview_task_id": "01a01c5d-b09b-7e7a-bcd9-856d6ee29da3",
+      "refine_task_id": "01a01c5f-9767-7d3c-a7cb-372ff7db79bb",
+      "refine_status": "SUCCEEDED",
+      "raw_bytes": 12905944,
+      "raw_sha256": "ea9d7ccb3e2c7de6dfffd6ba7429130ba218348a479b9b1d1d07111607a66a30",
+      "thumbnail": "windmill-workshop-preview.png",
+      "web_file": "gear-ratio-workshop-meshy.web.glb",
+      "web_bytes": 1984912,
+      "web_sha256": "2a948a80a85acdf8e017ea10f55f1f352ab1b1929b008b18ab661ca234853843",
+      "web_pipeline": "glTF Transform 4.4.2 optimize + Meshopt + WebP 2K"
+    },
+    {
+      "slug": "millstone-grain-chute",
+      "filename": "gear-ratio-millstone-meshy.raw.glb",
+      "target_polycount": 40000,
+      "prompt": "One connected medieval gristmill millstone and grain chute machine for an AAA educational game. Two stacked circular granite stones in a stout oak housing, central iron spindle, timber grain hopper above, shaped wooden feed chute, flour collection trough and tied canvas sack below. Every part physically connected with believable mechanical construction, realistic proportions and a clean silhouette, isolated with origin at its base. No people, text, logos, loose gears, floor diorama, or floating pieces.",
+      "texture_prompt": "Rough speckled granite millstones with radial tool marks, aged oak frame and hopper, blackened forged iron spindle, pale flour dust in creases, natural canvas sack. Realistic physically based materials, controlled roughness and subtle wear. No baked hard shadows, labels, fantasy glow, or decorative text.",
+      "preview_task_id": "01a01c5d-b65a-7e7a-b169-7e0f4f2de7f5",
+      "refine_task_id": "01a01c5f-9bff-7d3d-9d75-0bca3e138851",
+      "refine_status": "SUCCEEDED",
+      "raw_bytes": 11397124,
+      "raw_sha256": "8d09345e1afcf38af39155eee2711f1d7e42d73c6de3edf9ab71000d28d00064",
+      "thumbnail": "millstone-grain-chute-preview.png",
+      "web_file": "gear-ratio-millstone-meshy.web.glb",
+      "web_bytes": 1709164,
+      "web_sha256": "98c4ab89f79ad770f1335535a8c91d6ad796d84a10ed482ffacd230459e742ea",
+      "web_pipeline": "glTF Transform 4.4.2 optimize + Meshopt + WebP 2K"
+    }
+  ],
+  "security": "The API credential was supplied through a one-time RSA-OAEP-SHA256 handoff and was never committed."
+}
