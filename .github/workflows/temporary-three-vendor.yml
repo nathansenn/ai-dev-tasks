@@ -1,0 +1,49 @@
+name: Temporary Three.js vendor bundle
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bundle:
+    if: github.head_ref == 'agent/temporary-meshy-build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assemble the repository-compatible Three.js vendor tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save three@0.170.0
+          mkdir -p vendor/three/addons
+          cp node_modules/three/build/three.module.js vendor/three/three.module.js
+          cp -R node_modules/three/examples/jsm/. vendor/three/addons/
+          find vendor/three -type f | sort > vendor-files.txt
+          test -s vendor/three/three.module.js
+          test -s vendor/three/addons/loaders/GLTFLoader.js
+          test -s vendor/three/addons/libs/meshopt_decoder.module.js
+          test -s vendor/three/addons/postprocessing/UnrealBloomPass.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: commander-three-r170-vendor-${{ github.run_id }}
+          path: |
+            vendor
+            vendor-files.txt
+          retention-days: 2
+          compression-level: 7
+      - name: Report bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue comment "${{ github.event.pull_request.number }}" --repo "$GITHUB_REPOSITORY" --body "THREE_VENDOR_READY
+          run_id=${GITHUB_RUN_ID}
+          artifact=commander-three-r170-vendor-${GITHUB_RUN_ID}"
