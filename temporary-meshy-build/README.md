@@ -1,5 +1,5 @@
 # Temporary Meshy Build
 
-Ephemeral build branch used to generate the Commander Academy gear-ratio AAA assets. It will be removed after the artifact is transferred and verified.
+Ephemeral build branch used to generate and verify the Commander Academy gear-ratio AAA assets. It will be removed after the artifact is transferred and verified.
 
-Build mode: zero-credit recovery of completed Meshy 7 Ultra tasks, 2K PBR refinement, web-optimized GLBs, immutable public asset commit.
+Build mode: completed Meshy 7 Ultra assets, 2K PBR refinement, web-optimized GLBs, and a temporary Three.js r170 runtime bundle for final local scene verification.
